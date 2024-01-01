@@ -34,12 +34,6 @@ begin
 	end
 end
 
-# ╔═╡ bd9b0a51-1d25-4f53-bd87-a2fc998704b7
-# ╠═╡ skip_as_script = true
-#=╠═╡
-Slider(30:.5:40; show_value=true)
-  ╠═╡ =#
-
 # ╔═╡ 599e7851-21db-4430-b9ae-d3b3f06ccdff
 function Base.show(io::IO, m::MIME"text/html", slider::Slider)
 	start_index = findfirst(isequal(slider.default), slider.values)
@@ -74,6 +68,12 @@ end
 # ╔═╡ 5679f79d-10ae-4ab2-9470-f15db2636712
 Base.get(slider::Slider) = slider.default
 
+# ╔═╡ bd9b0a51-1d25-4f53-bd87-a2fc998704b7
+# ╠═╡ skip_as_script = true
+#=╠═╡
+@bind y Slider(30:.5:40; show_value=true)
+  ╠═╡ =#
+
 # ╔═╡ 1854fc42-e10a-4c1b-97db-cbb4e68695a2
 # ╠═╡ skip_as_script = true
 #=╠═╡
@@ -83,7 +83,7 @@ Base.get(slider::Slider) = slider.default
 # ╔═╡ a2f83ae0-7679-4fe0-8377-c623989eef8f
 # ╠═╡ skip_as_script = true
 #=╠═╡
-x
+y, x
   ╠═╡ =#
 
 # ╔═╡ 77791e63-c04d-4d7e-accc-c997c994e468
