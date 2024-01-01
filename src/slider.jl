@@ -8,10 +8,7 @@ using InteractiveUtils
 using HypertextLiteral
 
 # ╔═╡ ecb07281-3405-4fbd-8ace-bb53785490e6
-# ╠═╡ skip_as_script = true
-#=╠═╡
 import AbstractPlutoDingetjes.Bonds
-  ╠═╡ =#
 
 # ╔═╡ 55fa7b18-54ad-4910-ac5f-4e91a264333f
 import PlutoUI
@@ -33,6 +30,9 @@ begin
 		end, show_value, style)
 	end
 end
+
+# ╔═╡ 47a3798b-2dc3-4cbc-8c34-3a5cc2cf4d50
+Slider(30:.5:40; style=(var"-webkit-appearance"="slider-vertical", width="1em"), show_value=true)
 
 # ╔═╡ 599e7851-21db-4430-b9ae-d3b3f06ccdff
 function Base.show(io::IO, m::MIME"text/html", slider::Slider)
@@ -77,7 +77,7 @@ Base.get(slider::Slider) = slider.default
 # ╔═╡ 1854fc42-e10a-4c1b-97db-cbb4e68695a2
 # ╠═╡ skip_as_script = true
 #=╠═╡
-@bind x Slider(30:.5:40; style=(width="30%",), show_value=true)
+@bind x Slider(30:.5:40; style=(width="70%",), show_value=true)
   ╠═╡ =#
 
 # ╔═╡ a2f83ae0-7679-4fe0-8377-c623989eef8f
@@ -87,28 +87,16 @@ y, x
   ╠═╡ =#
 
 # ╔═╡ 77791e63-c04d-4d7e-accc-c997c994e468
-#=╠═╡
 Bonds.initial_value(slider::Slider) = slider.default
-  ╠═╡ =#
 
 # ╔═╡ d0ff290d-2318-4114-b92e-da9dc2dc9afa
-#=╠═╡
 Bonds.possible_values(slider::Slider) = 1:length(slider.values)
-  ╠═╡ =#
 
 # ╔═╡ 72b1b62e-0f4d-4e93-ae89-dd03fafc6c9e
-#=╠═╡
-function Bonds.transform_value(slider::Slider, val_from_js)
-	slider.values[val_from_js]
-end
-  ╠═╡ =#
+Bonds.transform_value(slider::Slider, val_from_js) = slider.values[val_from_js]
 
 # ╔═╡ aaa8d6eb-6718-4157-bb34-93c92282580d
-#=╠═╡
-function Bonds.validate_value(slider::Slider, val)
-	val isa Integer && 1 <= val <= length(slider.values)
-end
-  ╠═╡ =#
+Bonds.validate_value(slider::Slider, val) = val isa Integer && 1 <= val <= length(slider.values)
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -389,6 +377,7 @@ version = "17.4.0+0"
 # ╠═ecb07281-3405-4fbd-8ace-bb53785490e6
 # ╠═bd9b0a51-1d25-4f53-bd87-a2fc998704b7
 # ╠═1854fc42-e10a-4c1b-97db-cbb4e68695a2
+# ╠═47a3798b-2dc3-4cbc-8c34-3a5cc2cf4d50
 # ╠═a2f83ae0-7679-4fe0-8377-c623989eef8f
 # ╠═55fa7b18-54ad-4910-ac5f-4e91a264333f
 # ╠═a683c9b4-4285-49b5-bcc9-7fc572f03e91
