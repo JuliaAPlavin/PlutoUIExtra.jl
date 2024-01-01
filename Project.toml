@@ -1,0 +1,6 @@
+name = "PlutoUIExtra"
+uuid = "a011ac08-54e6-4ec3-ad1c-4165f16ac4ce"
+authors = ["Alexander Plavin <alexander@plav.in>"]
+version = "0.1.0"
+
+[deps]
