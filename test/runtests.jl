@@ -36,6 +36,18 @@ end
     @test default(el) == 1
 end
 
+@testitem "Select" begin
+    # tests adapted in PlutoUI itself
+    using PlutoUIExtra.Bonds
+    default(x) = Bonds.initial_value(x)
+    transform(el, x) = Bonds.transform_value(el, x)
+
+    el = Select(1:10)
+    @test default(el) == 1
+    el = Select(1:10, size=3)
+    @test default(el) == 1
+end
+
 
 @testitem "_" begin
     import Aqua

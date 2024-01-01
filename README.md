@@ -6,7 +6,8 @@ Following [Fons's advice](https://github.com/JuliaPluto/PlutoUI.jl/pull/257#issu
 `PlutoUIExtra` reexport everything from `PlutoUI` (and adds extra). There's no need to manually import both in your code.
 
 For now, contains the following widgets:
-- Styled slider: [usage & implementation](https://aplavin.github.io/PlutoUIExtra.jl/src/slider.html), [PlutoUI PR](https://github.com/JuliaPluto/PlutoUI.jl/pull/258)
 - Sidebar: [usage & implementation](https://aplavin.github.io/PlutoUIExtra.jl/src/sidebar.html), [PlutoUI PR](https://github.com/JuliaPluto/PlutoUI.jl/pull/257)
+- Styled slider: [usage & implementation](https://aplavin.github.io/PlutoUIExtra.jl/src/slider.html), [PlutoUI PR](https://github.com/JuliaPluto/PlutoUI.jl/pull/258)
+- Select with specified `size` (height): [usage & implementation](https://aplavin.github.io/PlutoUIExtra.jl/src/select.html)
 
 Feel free to suggest more!
