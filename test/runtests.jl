@@ -10,9 +10,10 @@ using TestItemRunner
 end
 
 @testitem "Slider" begin
-    using PlutoUIExtra.PlutoUI.BuiltinsNotebook.AbstractPlutoDingetjes
-    default(x) = Base.get(x)
-    transform(el, x) = AbstractPlutoDingetjes.Bonds.transform_value(el, x)
+    # tests adapted in PlutoUI itself
+    using PlutoUIExtra.Bonds
+    default(x) = Bonds.initial_value(x)
+    transform(el, x) = Bonds.transform_value(el, x)
 
     el = Slider(0.0:π:20)
     @test default(el) == 0
@@ -29,9 +30,6 @@ end
     @test default(el) == tan
 
     # Downsampling Slider ranges
-    x1 = [1,2,3]
-    x2 = rand(500)
-
     x4 = 1:9802439083
     el = Slider(x4; default=2, show_value=true)
     @test length(el.values) <= 1000
