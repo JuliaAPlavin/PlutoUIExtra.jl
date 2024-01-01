@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.26
+# v0.19.27
 
 using Markdown
 using InteractiveUtils
@@ -19,15 +19,16 @@ begin
 		values::AbstractVector{T}
 		default::T
 		show_value::Bool
+		on_release::Bool
 		style
 	end
 	
-	function Slider(values::AbstractVector{T}; default=missing, show_value=false, max_steps=1_000, style=(;)) where T
+	function Slider(values::AbstractVector{T}; default=missing, show_value=false, on_release=false, max_steps=1_000, style=(;)) where T
 		new_values = PlutoUI.BuiltinsNotebook.downsample(values, max_steps)
 		Slider(new_values, (default === missing) ? first(new_values) : let
 			d = default
 			d ∈ new_values ? convert(T, d) : PlutoUI.BuiltinsNotebook.closest(new_values, d)
-		end, show_value, style)
+		end, show_value, on_release, style)
 	end
 end
 
@@ -39,7 +40,9 @@ function Base.show(io::IO, m::MIME"text/html", slider::Slider)
 	start_index = findfirst(isequal(slider.default), slider.values)
 	
 	show(io, m, @htl(
-		"""<input $((
+		"""
+		$(slider.on_release ? @htl("<span></span>") : nothing)
+		<input $((
 			type="range",
 			min=1,
 			max=length(slider.values),
@@ -62,6 +65,31 @@ function Base.show(io::IO, m::MIME"text/html", slider::Slider)
 					transform: translateY(-4px);
 					display: inline-block;'>$(string(slider.default))</output>"""
 			) : nothing
+		)
+		$(
+				slider.on_release ? @htl(
+				"""<script>
+				const getPreviousSibling = function (elem, selector) {
+					var sibling = elem.previousElementSibling;
+					if (!selector) return sibling;
+					while (sibling) {
+						if (sibling.matches(selector)) return sibling;
+						sibling = sibling.previousElementSibling;
+					}
+				};
+				const input_el = getPreviousSibling(currentScript, 'input');
+				const event_el = input_el.previousElementSibling;
+
+				const propagateevt = () => {
+					event_el.value = input_el.valueAsNumber;
+					event_el.dispatchEvent(new CustomEvent("input"));
+				}
+				input_el.addEventListener("mouseup", propagateevt);
+				input_el.addEventListener("touchend", propagateevt);
+				event_el.value = $start_index;
+				</script>
+				"""
+			) : nothing
 		)"""))
 end
 
@@ -71,7 +99,7 @@ Base.get(slider::Slider) = slider.default
 # ╔═╡ bd9b0a51-1d25-4f53-bd87-a2fc998704b7
 # ╠═╡ skip_as_script = true
 #=╠═╡
-@bind y Slider(30:.5:40; show_value=true)
+@bind y Slider(30:.5:40; show_value=true, on_release=true)
   ╠═╡ =#
 
 # ╔═╡ 1854fc42-e10a-4c1b-97db-cbb4e68695a2
@@ -115,7 +143,7 @@ PlutoUI = "~0.7.51"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.9.0"
+julia_version = "1.9.3"
 manifest_format = "2.0"
 project_hash = "27a0b4ad1a5546b6faff1357f16dc1216a00b6db"
 
@@ -144,7 +172,7 @@ version = "0.11.4"
 [[deps.CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
-version = "1.0.2+0"
+version = "1.0.5+0"
 
 [[deps.Dates]]
 deps = ["Printf"]
@@ -260,7 +288,7 @@ version = "2.5.10"
 [[deps.Pkg]]
 deps = ["Artifacts", "Dates", "Downloads", "FileWatching", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "Serialization", "TOML", "Tar", "UUIDs", "p7zip_jll"]
 uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
-version = "1.9.0"
+version = "1.9.2"
 
 [[deps.PlutoUI]]
 deps = ["AbstractPlutoDingetjes", "Base64", "ColorTypes", "Dates", "FixedPointNumbers", "Hyperscript", "HypertextLiteral", "IOCapture", "InteractiveUtils", "JSON", "Logging", "MIMEs", "Markdown", "Random", "Reexport", "URIs", "UUIDs"]
@@ -360,7 +388,7 @@ version = "1.2.13+0"
 [[deps.libblastrampoline_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "8e850b90-86db-534c-a0d3-1478176c7d93"
-version = "5.7.0+0"
+version = "5.8.0+0"
 
 [[deps.nghttp2_jll]]
 deps = ["Artifacts", "Libdl"]
