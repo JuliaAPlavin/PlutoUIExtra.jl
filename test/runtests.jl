@@ -37,7 +37,6 @@ end
 end
 
 @testitem "Select" begin
-    # tests adapted in PlutoUI itself
     using PlutoUIExtra.Bonds
     default(x) = Bonds.initial_value(x)
     transform(el, x) = Bonds.transform_value(el, x)
@@ -46,6 +45,26 @@ end
     @test default(el) == 1
     el = Select(1:10, size=3)
     @test default(el) == 1
+end
+
+@testitem "Radio" begin
+    using PlutoUIExtra.Bonds
+    default_(x) = Bonds.initial_value(x)
+    transform(el, x) = Bonds.transform_value(el, x)
+
+    el = Radio(["a", "b", "c"], default="b")
+    @test default_(el) == "b"
+    el = Radio(["a", "b", "c"], orientation=:vertical, default="b")
+    @test default_(el) == "b"
+    el = Radio(["a", "b", "c"], orientation=:horizontal, default="b")
+    @test default_(el) == "b"
+
+    el = Radio(["a" => "x", "b" => "y", "c" => "z"], default="b")
+    @test default_(el) == "b"
+    el = Radio(["a" => "x", "b" => "y", "c" => "z"], orientation=:vertical, default="b")
+    @test default_(el) == "b"
+    el = Radio(["a" => "x", "b" => "y", "c" => "z"], orientation=:horizontal, default="b")
+    @test default_(el) == "b"
 end
 
 

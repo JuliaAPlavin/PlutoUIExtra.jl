@@ -7,5 +7,6 @@ export Sidebar
 include("sidebar.jl")
 include("slider.jl")
 include("select.jl")
+include("radio.jl")
 
 end
