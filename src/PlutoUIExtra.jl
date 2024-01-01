@@ -8,5 +8,6 @@ include("sidebar.jl")
 include("slider.jl")
 include("select.jl")
 include("radio.jl")
+include("textfield.jl")
 
 end

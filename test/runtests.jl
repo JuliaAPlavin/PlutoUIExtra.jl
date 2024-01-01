@@ -67,6 +67,17 @@ end
     @test default_(el) == "b"
 end
 
+@testitem "TextField" begin
+    using PlutoUIExtra.Bonds
+    default(x) = Bonds.initial_value(x)
+    transform(el, x) = Bonds.transform_value(el, x)
+
+    el = TextField(default="def")
+    @test default(el) == "def"
+    el = TextField(default="def", options=["abc", "acd", "xyz"])
+    @test default(el) == "def"
+end
+
 
 @testitem "_" begin
     import Aqua
