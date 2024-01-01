@@ -17,8 +17,7 @@ end
 
     el = Slider(0.0:π:20)
     @test default(el) == 0
-    el = Slider(0.0:π:20; show_value = true, style=(width="100%",))
-    el = Slider(0.0:π:20; default = π)
+    el = Slider(0.0:π:20; show_value = true, style=(width="100%",), default=π)
     @test default(el) == Float64(π) # should have been converted to Float64 because our range has been
     el = Slider(1:1//3:20; default = 7 // 3)
     @test default(el) === 7 // 3
@@ -31,7 +30,7 @@ end
 
     # Downsampling Slider ranges
     x4 = 1:9802439083
-    el = Slider(x4; default=2, show_value=true)
+    el = Slider(x4; default=2, show_value=true, on_release=true)
     @test length(el.values) <= 1000
     @test default(el) == 1
 end

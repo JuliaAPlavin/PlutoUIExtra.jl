@@ -6,7 +6,7 @@ TestItemRunner = "f8b46487-2199-4994-9208-9a1283c18c0a"
 TestItems = "1c621080-faea-4a02-84b6-bbd5e436b8fe"
 
 [compat]
-Aqua = "0.6.3"
+Aqua = "0.7"
 CompatHelperLocal = "0.1.25"
 TestItemRunner = "0.2.1"
 TestItems = "0.1.1"
