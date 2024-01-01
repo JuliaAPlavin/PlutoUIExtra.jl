@@ -10,5 +10,6 @@ For now, contains the following widgets:
 - Styled `Slider`: [usage & implementation](https://aplavin.github.io/PlutoUIExtra.jl/src/slider.html), [PlutoUI PR](https://github.com/JuliaPluto/PlutoUI.jl/pull/258)
 - `Select` with specified `size` (height): [usage & implementation](https://aplavin.github.io/PlutoUIExtra.jl/src/select.html)
 - `Radio` with specified `orientation`: [usage & implementation](https://aplavin.github.io/PlutoUIExtra.jl/src/radio.html)
+- `TextField` with an autocomplete list (`options`): [usage & implementation](https://aplavin.github.io/PlutoUIExtra.jl/src/textfield.html)
 
 Feel free to suggest more!
