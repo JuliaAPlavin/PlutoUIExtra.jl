@@ -1,7 +1,7 @@
 name = "PlutoUIExtra"
 uuid = "a011ac08-54e6-4ec3-ad1c-4165f16ac4ce"
 authors = ["Alexander Plavin <alexander@plav.in>"]
-version = "0.1.4"
+version = "0.1.5"
 
 [deps]
 AbstractPlutoDingetjes = "6e696c72-6542-2067-7265-42206c756150"

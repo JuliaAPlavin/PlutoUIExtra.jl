@@ -4,6 +4,16 @@
 using Markdown
 using InteractiveUtils
 
+# This Pluto notebook uses @bind for interactivity. When running this notebook outside of Pluto, the following 'mock version' of @bind gives bound variables a default value (instead of an error).
+macro bind(def, element)
+    quote
+        local iv = try Base.loaded_modules[Base.PkgId(Base.UUID("6e696c72-6542-2067-7265-42206c756150"), "AbstractPlutoDingetjes")].Bonds.initial_value catch; b -> missing; end
+        local el = $(esc(element))
+        global $(esc(def)) = Core.applicable(Base.get, el) ? Base.get(el) : iv(el)
+        el
+    end
+end
+
 # ╔═╡ a683c9b4-4285-49b5-bcc9-7fc572f03e91
 using HypertextLiteral
 
@@ -41,14 +51,37 @@ function Base.show(io::IO, m::MIME"text/html", slider::Slider)
 	
 	show(io, m, @htl(
 		"""
-		$(slider.on_release ? @htl("<span></span>") : nothing)
+		$(
+				slider.on_release ? @htl(
+				"""<span></span>
+				<script>
+				const input_el = currentScript.nextElementSibling;
+				const event_el = currentScript.previousElementSibling;
+
+				const propagateevt = () => {
+					const new_value = input_el.valueAsNumber;
+					if (new_value == event_el.value) {
+						return;
+					}
+					event_el.value = new_value;
+					event_el.dispatchEvent(new CustomEvent("input"));
+				}
+				input_el.addEventListener("mouseup", propagateevt);
+				input_el.addEventListener("touchend", propagateevt);
+				input_el.addEventListener("input", e => e.stopPropagation());
+				event_el.value = $start_index;
+				</script>
+				"""
+			) : nothing
+		)
 		<input $((
 			type="range",
 			min=1,
 			max=length(slider.values),
 			value=start_index,
 			style=slider.style,
-		))>$(
+		))>
+		$(
 				slider.show_value ? @htl(
 				"""<script>
 				const input_el = currentScript.previousElementSibling
@@ -65,32 +98,8 @@ function Base.show(io::IO, m::MIME"text/html", slider::Slider)
 					transform: translateY(-4px);
 					display: inline-block;'>$(string(slider.default))</output>"""
 			) : nothing
-		)
-		$(
-				slider.on_release ? @htl(
-				"""<script>
-				const getPreviousSibling = function (elem, selector) {
-					var sibling = elem.previousElementSibling;
-					if (!selector) return sibling;
-					while (sibling) {
-						if (sibling.matches(selector)) return sibling;
-						sibling = sibling.previousElementSibling;
-					}
-				};
-				const input_el = getPreviousSibling(currentScript, 'input');
-				const event_el = input_el.previousElementSibling;
-
-				const propagateevt = () => {
-					event_el.value = input_el.valueAsNumber;
-					event_el.dispatchEvent(new CustomEvent("input"));
-				}
-				input_el.addEventListener("mouseup", propagateevt);
-				input_el.addEventListener("touchend", propagateevt);
-				event_el.value = $start_index;
-				</script>
-				"""
-			) : nothing
-		)"""))
+		)"""
+	))
 end
 
 # ╔═╡ 5679f79d-10ae-4ab2-9470-f15db2636712
@@ -111,8 +120,16 @@ Base.get(slider::Slider) = slider.default
 # ╔═╡ a2f83ae0-7679-4fe0-8377-c623989eef8f
 # ╠═╡ skip_as_script = true
 #=╠═╡
-y, x
+(sleep(0.5); (y, x))
   ╠═╡ =#
+
+# ╔═╡ d4dd14aa-6531-4b5d-a0e3-bf03d0b32eec
+@bind c PlutoUI.combine() do C
+	C(Slider(1:10; on_release=true))
+end
+
+# ╔═╡ 7afcb5e7-05a2-4737-aa8b-9768bcea6067
+(sleep(0.5); c)
 
 # ╔═╡ 77791e63-c04d-4d7e-accc-c997c994e468
 Bonds.initial_value(slider::Slider) = slider.default
@@ -407,6 +424,8 @@ version = "17.4.0+0"
 # ╠═1854fc42-e10a-4c1b-97db-cbb4e68695a2
 # ╠═47a3798b-2dc3-4cbc-8c34-3a5cc2cf4d50
 # ╠═a2f83ae0-7679-4fe0-8377-c623989eef8f
+# ╠═d4dd14aa-6531-4b5d-a0e3-bf03d0b32eec
+# ╠═7afcb5e7-05a2-4737-aa8b-9768bcea6067
 # ╠═55fa7b18-54ad-4910-ac5f-4e91a264333f
 # ╠═a683c9b4-4285-49b5-bcc9-7fc572f03e91
 # ╠═5400e620-0479-11ee-3e40-e986b7b30ab0
