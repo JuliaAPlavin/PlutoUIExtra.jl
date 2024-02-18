@@ -33,6 +33,10 @@ end
     el = Slider(x4; default=2, show_value=true, on_release=true)
     @test length(el.values) <= 1000
     @test default(el) == 1
+
+    # my tests
+    using IntervalSets
+    Slider(1..10)
 end
 
 @testitem "Select" begin

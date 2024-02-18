@@ -1,5 +1,5 @@
 ### A Pluto.jl notebook ###
-# v0.19.27
+# v0.19.38
 
 using Markdown
 using InteractiveUtils
@@ -13,6 +13,12 @@ macro bind(def, element)
         el
     end
 end
+
+# ╔═╡ 86c94ce2-4eec-4b00-938c-7dd6a0071c3b
+using IntervalSets
+
+# ╔═╡ 31d7d58f-a1b2-49e9-9b8f-68599c847cec
+using FlexiMaps
 
 # ╔═╡ a683c9b4-4285-49b5-bcc9-7fc572f03e91
 using HypertextLiteral
@@ -33,22 +39,42 @@ begin
 		style
 	end
 	
-	function Slider(values::AbstractVector{T}; default=missing, show_value=false, on_release=false, max_steps=1_000, style=(;)) where T
+	function Slider(values::AbstractVector{T}; default=missing, show_value=true, on_release=false, max_steps=1_000, style=(;)) where T
 		new_values = PlutoUI.BuiltinsNotebook.downsample(values, max_steps)
 		Slider(new_values, (default === missing) ? first(new_values) : let
 			d = default
 			d ∈ new_values ? convert(T, d) : PlutoUI.BuiltinsNotebook.closest(new_values, d)
 		end, show_value, on_release, style)
 	end
+
+	function Slider(int::Interval; kwargs...)
+		vals = if minimum(int) > 0 && maximum(int)/minimum(int) > 50
+			maprange(log, int, length=500)
+		else
+			range(int, length=500)
+		end
+		vals = round.(vals, sigdigits=2)
+		Slider(vals; kwargs...)
+	end
+end
+
+# ╔═╡ f3bfa9e8-b7ed-41fe-b4e8-f7cfdafde9d6
+map([0..1, 3..4, -1..2, 1e-5..1, 1e-4..1, 1e-3..1, 1e-2..1, 1e-1..1, -1..(-1e-5), -1e-5..1]) do int
+	Slider(int)
 end
 
 # ╔═╡ 47a3798b-2dc3-4cbc-8c34-3a5cc2cf4d50
-Slider(30:.5:40; style=(var"-webkit-appearance"="slider-vertical", width="1em"), show_value=true)
+Slider(30:.5:40; style=(var"-webkit-appearance"="slider-vertical", width="1em"))
+
+# ╔═╡ 53a37124-e52a-491d-a06d-3e8bb50c4a73
+
 
 # ╔═╡ 599e7851-21db-4430-b9ae-d3b3f06ccdff
 function Base.show(io::IO, m::MIME"text/html", slider::Slider)
 	start_index = findfirst(isequal(slider.default), slider.values)
 	
+	# comment from @fonsp:
+	# It looks like this could be implemented in a slightly more robust way by listening to the "change" event instead of "input" on the <input type=range> element. That means that you don't need the mouseup handlers, but you still need a wrapper element, custom value property etc.
 	show(io, m, @htl(
 		"""
 		$(
@@ -108,13 +134,13 @@ Base.get(slider::Slider) = slider.default
 # ╔═╡ bd9b0a51-1d25-4f53-bd87-a2fc998704b7
 # ╠═╡ skip_as_script = true
 #=╠═╡
-@bind y Slider(30:.5:40; show_value=true, on_release=true)
+@bind y Slider(30:.5:40; on_release=true)
   ╠═╡ =#
 
 # ╔═╡ 1854fc42-e10a-4c1b-97db-cbb4e68695a2
 # ╠═╡ skip_as_script = true
 #=╠═╡
-@bind x Slider(30:.5:40; style=(width="70%",), show_value=true)
+@bind x Slider(30:.5:40; style=(width="70%",))
   ╠═╡ =#
 
 # ╔═╡ a2f83ae0-7679-4fe0-8377-c623989eef8f
@@ -147,12 +173,16 @@ Bonds.validate_value(slider::Slider, val) = val isa Integer && 1 <= val <= lengt
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
 AbstractPlutoDingetjes = "6e696c72-6542-2067-7265-42206c756150"
+FlexiMaps = "6394faf6-06db-4fa8-b750-35ccc60383f7"
 HypertextLiteral = "ac1192a8-f4b3-4bfe-ba22-af5b92cd3ab2"
+IntervalSets = "8197267c-284f-5f27-9208-e0e47529a953"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 
 [compat]
 AbstractPlutoDingetjes = "~1.1.4"
+FlexiMaps = "~0.1.24"
 HypertextLiteral = "~0.9.4"
+IntervalSets = "~0.7.9"
 PlutoUI = "~0.7.51"
 """
 
@@ -160,15 +190,34 @@ PlutoUI = "~0.7.51"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.9.3"
+julia_version = "1.10.0"
 manifest_format = "2.0"
-project_hash = "27a0b4ad1a5546b6faff1357f16dc1216a00b6db"
+project_hash = "63aa77a61349dbd6629dc28ec0f9d2721b4b6764"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
 git-tree-sha1 = "8eaf9f1b4921132a4cff3f36a1d9ba923b14a481"
 uuid = "6e696c72-6542-2067-7265-42206c756150"
 version = "1.1.4"
+
+[[deps.Accessors]]
+deps = ["CompositionsBase", "ConstructionBase", "Dates", "InverseFunctions", "LinearAlgebra", "MacroTools", "Test"]
+git-tree-sha1 = "cb96992f1bec110ad211b7e410e57ddf7944c16f"
+uuid = "7d9f7c33-5ae7-4f3b-8dc6-eff91059b697"
+version = "0.1.35"
+
+    [deps.Accessors.extensions]
+    AccessorsAxisKeysExt = "AxisKeys"
+    AccessorsIntervalSetsExt = "IntervalSets"
+    AccessorsStaticArraysExt = "StaticArrays"
+    AccessorsStructArraysExt = "StructArrays"
+
+    [deps.Accessors.weakdeps]
+    AxisKeys = "94b1ba4f-4ee9-5380-92f1-94cde586c3c5"
+    IntervalSets = "8197267c-284f-5f27-9208-e0e47529a953"
+    Requires = "ae029012-a4dd-5104-9daa-d747884805df"
+    StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
+    StructArrays = "09ab397b-f2b6-538f-b94a-2f83cf4a842a"
 
 [[deps.ArgTools]]
 uuid = "0dad84c5-d112-42e6-8d28-ef12dabb789f"
@@ -189,7 +238,35 @@ version = "0.11.4"
 [[deps.CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
-version = "1.0.5+0"
+version = "1.0.5+1"
+
+[[deps.CompositionsBase]]
+git-tree-sha1 = "802bb88cd69dfd1509f6670416bd4434015693ad"
+uuid = "a33af91c-f02d-484b-be07-31d278c5ca2b"
+version = "0.1.2"
+weakdeps = ["InverseFunctions"]
+
+    [deps.CompositionsBase.extensions]
+    CompositionsBaseInverseFunctionsExt = "InverseFunctions"
+
+[[deps.ConstructionBase]]
+deps = ["LinearAlgebra"]
+git-tree-sha1 = "c53fc348ca4d40d7b371e71fd52251839080cbc9"
+uuid = "187b0558-2788-49d3-abe0-74a17ed4e7c9"
+version = "1.5.4"
+
+    [deps.ConstructionBase.extensions]
+    ConstructionBaseIntervalSetsExt = "IntervalSets"
+    ConstructionBaseStaticArraysExt = "StaticArrays"
+
+    [deps.ConstructionBase.weakdeps]
+    IntervalSets = "8197267c-284f-5f27-9208-e0e47529a953"
+    StaticArrays = "90137ffa-7385-5640-81b9-e52037218182"
+
+[[deps.DataPipes]]
+git-tree-sha1 = "64ae76311a9e3a300ccabc1d8d5d4d36b9d047c7"
+uuid = "02685ad9-2d12-40c3-9f73-c6aeda6a7ff5"
+version = "0.3.14"
 
 [[deps.Dates]]
 deps = ["Printf"]
@@ -208,6 +285,22 @@ deps = ["Statistics"]
 git-tree-sha1 = "335bfdceacc84c5cdf16aadc768aa5ddfc5383cc"
 uuid = "53c48c17-4a7d-5ca2-90c5-79b7896eea93"
 version = "0.8.4"
+
+[[deps.FlexiMaps]]
+deps = ["Accessors", "DataPipes", "InverseFunctions"]
+git-tree-sha1 = "d1d0d024041703987c369f7e314adf7ca1852652"
+uuid = "6394faf6-06db-4fa8-b750-35ccc60383f7"
+version = "0.1.24"
+
+    [deps.FlexiMaps.extensions]
+    DictionariesExt = "Dictionaries"
+    IntervalSetsExt = "IntervalSets"
+    StructArraysExt = "StructArrays"
+
+    [deps.FlexiMaps.weakdeps]
+    Dictionaries = "85a47980-9c8c-11e8-2b9f-f7ca1fa99fb4"
+    IntervalSets = "8197267c-284f-5f27-9208-e0e47529a953"
+    StructArrays = "09ab397b-f2b6-538f-b94a-2f83cf4a842a"
 
 [[deps.Hyperscript]]
 deps = ["Test"]
@@ -231,6 +324,22 @@ version = "0.2.3"
 deps = ["Markdown"]
 uuid = "b77e0a4c-d291-57a0-90e8-8db25a27a240"
 
+[[deps.IntervalSets]]
+git-tree-sha1 = "581191b15bcb56a2aa257e9c160085d0f128a380"
+uuid = "8197267c-284f-5f27-9208-e0e47529a953"
+version = "0.7.9"
+weakdeps = ["Random", "Statistics"]
+
+    [deps.IntervalSets.extensions]
+    IntervalSetsRandomExt = "Random"
+    IntervalSetsStatisticsExt = "Statistics"
+
+[[deps.InverseFunctions]]
+deps = ["Test"]
+git-tree-sha1 = "68772f49f54b479fa88ace904f6127f0a3bb2e46"
+uuid = "3587e190-3f89-42d0-90ee-14403ec27112"
+version = "0.1.12"
+
 [[deps.JSON]]
 deps = ["Dates", "Mmap", "Parsers", "Unicode"]
 git-tree-sha1 = "31e996f0a15c7b280ba9f76636b3ff9e2ae58c9a"
@@ -240,21 +349,26 @@ version = "0.21.4"
 [[deps.LibCURL]]
 deps = ["LibCURL_jll", "MozillaCACerts_jll"]
 uuid = "b27032c2-a3e7-50c8-80cd-2d36dbcbfd21"
-version = "0.6.3"
+version = "0.6.4"
 
 [[deps.LibCURL_jll]]
 deps = ["Artifacts", "LibSSH2_jll", "Libdl", "MbedTLS_jll", "Zlib_jll", "nghttp2_jll"]
 uuid = "deac9b47-8bc7-5906-a0fe-35ac56dc84c0"
-version = "7.84.0+0"
+version = "8.4.0+0"
 
 [[deps.LibGit2]]
-deps = ["Base64", "NetworkOptions", "Printf", "SHA"]
+deps = ["Base64", "LibGit2_jll", "NetworkOptions", "Printf", "SHA"]
 uuid = "76f85450-5226-5b5a-8eaa-529ad045b433"
+
+[[deps.LibGit2_jll]]
+deps = ["Artifacts", "LibSSH2_jll", "Libdl", "MbedTLS_jll"]
+uuid = "e37daf67-58a4-590a-8e99-b0245dd2ffc5"
+version = "1.6.4+0"
 
 [[deps.LibSSH2_jll]]
 deps = ["Artifacts", "Libdl", "MbedTLS_jll"]
 uuid = "29816b5a-b9ab-546f-933c-edad1886dfa8"
-version = "1.10.2+0"
+version = "1.11.0+1"
 
 [[deps.Libdl]]
 uuid = "8f399da3-3557-5675-b5ff-fb832c97cbdb"
@@ -271,6 +385,12 @@ git-tree-sha1 = "65f28ad4b594aebe22157d6fac869786a255b7eb"
 uuid = "6c6e2e6c-3030-632d-7369-2d6c69616d65"
 version = "0.1.4"
 
+[[deps.MacroTools]]
+deps = ["Markdown", "Random"]
+git-tree-sha1 = "2fa9ee3e63fd3a4f7a9a4f4744a52f4856de82df"
+uuid = "1914dd2f-81c6-5fcd-8719-6d5c9610ff09"
+version = "0.5.13"
+
 [[deps.Markdown]]
 deps = ["Base64"]
 uuid = "d6f4376e-aef5-505a-96c1-9c027394607a"
@@ -278,14 +398,14 @@ uuid = "d6f4376e-aef5-505a-96c1-9c027394607a"
 [[deps.MbedTLS_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "c8ffd9c3-330d-5841-b78e-0817d7145fa1"
-version = "2.28.2+0"
+version = "2.28.2+1"
 
 [[deps.Mmap]]
 uuid = "a63ad114-7e13-5084-954f-fe012c677804"
 
 [[deps.MozillaCACerts_jll]]
 uuid = "14a3606d-f60d-562e-9121-12d972cd8159"
-version = "2022.10.11"
+version = "2023.1.10"
 
 [[deps.NetworkOptions]]
 uuid = "ca575930-c2e3-43a9-ace4-1e988b2c1908"
@@ -294,7 +414,7 @@ version = "1.2.0"
 [[deps.OpenBLAS_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]
 uuid = "4536629a-c528-5b80-bd46-f80d51c5b363"
-version = "0.3.21+4"
+version = "0.3.23+2"
 
 [[deps.Parsers]]
 deps = ["Dates", "PrecompileTools", "UUIDs"]
@@ -305,7 +425,7 @@ version = "2.5.10"
 [[deps.Pkg]]
 deps = ["Artifacts", "Dates", "Downloads", "FileWatching", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "Serialization", "TOML", "Tar", "UUIDs", "p7zip_jll"]
 uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
-version = "1.9.2"
+version = "1.10.0"
 
 [[deps.PlutoUI]]
 deps = ["AbstractPlutoDingetjes", "Base64", "ColorTypes", "Dates", "FixedPointNumbers", "Hyperscript", "HypertextLiteral", "IOCapture", "InteractiveUtils", "JSON", "Logging", "MIMEs", "Markdown", "Random", "Reexport", "URIs", "UUIDs"]
@@ -334,7 +454,7 @@ deps = ["InteractiveUtils", "Markdown", "Sockets", "Unicode"]
 uuid = "3fa0cd96-eef1-5676-8a61-b3b8758bbffb"
 
 [[deps.Random]]
-deps = ["SHA", "Serialization"]
+deps = ["SHA"]
 uuid = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 
 [[deps.Reexport]]
@@ -355,16 +475,17 @@ uuid = "6462fe0b-24de-5631-8697-dd941f90decc"
 [[deps.SparseArrays]]
 deps = ["Libdl", "LinearAlgebra", "Random", "Serialization", "SuiteSparse_jll"]
 uuid = "2f01184e-e22b-5df5-ae63-d93ebab69eaf"
+version = "1.10.0"
 
 [[deps.Statistics]]
 deps = ["LinearAlgebra", "SparseArrays"]
 uuid = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
-version = "1.9.0"
+version = "1.10.0"
 
 [[deps.SuiteSparse_jll]]
-deps = ["Artifacts", "Libdl", "Pkg", "libblastrampoline_jll"]
+deps = ["Artifacts", "Libdl", "libblastrampoline_jll"]
 uuid = "bea87d4a-7f5b-5778-9afe-8cc45184846c"
-version = "5.10.1+6"
+version = "7.2.1+1"
 
 [[deps.TOML]]
 deps = ["Dates"]
@@ -400,28 +521,31 @@ uuid = "4ec0a83e-493e-50e2-b9ac-8f72acf5a8f5"
 [[deps.Zlib_jll]]
 deps = ["Libdl"]
 uuid = "83775a58-1f1d-513f-b197-d71354ab007a"
-version = "1.2.13+0"
+version = "1.2.13+1"
 
 [[deps.libblastrampoline_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "8e850b90-86db-534c-a0d3-1478176c7d93"
-version = "5.8.0+0"
+version = "5.8.0+1"
 
 [[deps.nghttp2_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "8e850ede-7688-5339-a07c-302acd2aaf8d"
-version = "1.48.0+0"
+version = "1.52.0+1"
 
 [[deps.p7zip_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"
-version = "17.4.0+0"
+version = "17.4.0+2"
 """
 
 # ╔═╡ Cell order:
 # ╠═ecb07281-3405-4fbd-8ace-bb53785490e6
+# ╠═86c94ce2-4eec-4b00-938c-7dd6a0071c3b
+# ╠═31d7d58f-a1b2-49e9-9b8f-68599c847cec
 # ╠═bd9b0a51-1d25-4f53-bd87-a2fc998704b7
 # ╠═1854fc42-e10a-4c1b-97db-cbb4e68695a2
+# ╠═f3bfa9e8-b7ed-41fe-b4e8-f7cfdafde9d6
 # ╠═47a3798b-2dc3-4cbc-8c34-3a5cc2cf4d50
 # ╠═a2f83ae0-7679-4fe0-8377-c623989eef8f
 # ╠═d4dd14aa-6531-4b5d-a0e3-bf03d0b32eec
@@ -429,6 +553,7 @@ version = "17.4.0+0"
 # ╠═55fa7b18-54ad-4910-ac5f-4e91a264333f
 # ╠═a683c9b4-4285-49b5-bcc9-7fc572f03e91
 # ╠═5400e620-0479-11ee-3e40-e986b7b30ab0
+# ╠═53a37124-e52a-491d-a06d-3e8bb50c4a73
 # ╠═599e7851-21db-4430-b9ae-d3b3f06ccdff
 # ╠═5679f79d-10ae-4ab2-9470-f15db2636712
 # ╠═77791e63-c04d-4d7e-accc-c997c994e468
