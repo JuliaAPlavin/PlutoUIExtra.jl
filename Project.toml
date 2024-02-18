@@ -16,7 +16,7 @@ Reexport = "189a3867-3050-52da-a836-e630ba90ab69"
 
 [compat]
 AbstractPlutoDingetjes = "1.1.4"
-FlexiMaps = "0.1.24"
+FlexiMaps = "0.1.22"
 HypertextLiteral = "0.9.4"
 InteractiveUtils = "1"
 IntervalSets = "0.7"
