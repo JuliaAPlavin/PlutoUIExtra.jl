@@ -53,7 +53,7 @@ begin
 		else
 			range(int, length=500)
 		end
-		vals = round.(vals, sigdigits=2)
+		vals = unique(round.(vals, sigdigits=3))
 		Slider(vals; kwargs...)
 	end
 end
