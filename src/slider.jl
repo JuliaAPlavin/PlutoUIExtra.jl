@@ -49,6 +49,8 @@ Slider(30:.5:40; style=(var"-webkit-appearance"="slider-vertical", width="1em"),
 function Base.show(io::IO, m::MIME"text/html", slider::Slider)
 	start_index = findfirst(isequal(slider.default), slider.values)
 	
+	# comment from @fonsp:
+	# It looks like this could be implemented in a slightly more robust way by listening to the "change" event instead of "input" on the <input type=range> element. That means that you don't need the mouseup handlers, but you still need a wrapper element, custom value property etc.
 	show(io, m, @htl(
 		"""
 		$(
